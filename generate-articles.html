@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Article Pages</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1e293b; margin-bottom: 20px; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+        button:hover { background: #1d4ed8; }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f9ff;
+            border-left: 4px solid #2563eb;
+            border-radius: 4px;
+        }
+        .success { background: #f0fdf4; border-color: #16a34a; }
+        .file-list {
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .file-item {
+            padding: 5px 0;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .file-item::before {
+            content: "✓ ";
+            color: #16a34a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Article Pages Generator</h1>
+        <p>Click the button below to generate all 18 article detail pages.</p>
+        
+        <button onclick="generateAllArticles()">Generate All Article Pages</button>
+        
+        <div id="status"></div>
+        <div id="fileList" class="file-list" style="display: none;"></div>
+    </div>
+
+    <script src="articles.js"></script>
+    <script>
+        function getHeader(title, description) {
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${title} - EverydayMoments</title>
+    <meta name="description" content="${description}">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">EverydayMoments</a>
+            <nav class="nav-desktop">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="contact.html">Contact</a>
+                <a href="how-we-make-money.html">How We Make Money</a>
+                <a href="editorial-guidelines.html">Editorial Guidelines</a>
+            </nav>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+        <nav class="mobile-menu" id="mobileMenu">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="how-we-make-money.html">How We Make Money</a>
+            <a href="editorial-guidelines.html">Editorial Guidelines</a>
+        </nav>
+    </header>`;
+        }
+
+        const footer = `
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Company</h3>
+                <ul>
+                    <li><a href="about.html">About Us</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="how-we-make-money.html">How We Make Money</a></li>
+                    <li><a href="editorial-guidelines.html">Editorial Guidelines</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="terms.html">Terms of Service</a></li>
+                    <li><a href="disclaimer.html">Disclaimer</a></li>
+                    <li><a href="cookie-policy.html">Cookie Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Categories</h3>
+                <ul>
+                    <li><a href="index.html#productivity">Productivity</a></li>
+                    <li><a href="index.html#technology">Technology</a></li>
+                    <li><a href="index.html#wellness">Wellness</a></li>
+                    <li><a href="index.html#lifestyle">Lifestyle</a></li>
+                    <li><a href="index.html#finance">Finance</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <ul>
+                    <li><a href="#facebook">Facebook</a></li>
+                    <li><a href="#twitter">Twitter</a></li>
+                    <li><a href="#instagram">Instagram</a></li>
+                    <li><a href="#linkedin">LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 EverydayMoments. All rights reserved.</p>
+        </div>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>`;
+
+        function generateArticlePage(article) {
+            const content = article.content;
+            
+            let pointsHtml = '';
+            content.sections.forEach(section => {
+                pointsHtml += `<h2>${section.heading}</h2><ul>`;
+                section.points.forEach(point => {
+                    pointsHtml += `<li>${point}</li>`;
+                });
+                pointsHtml += '</ul>';
+            });
+
+            const html = getHeader(article.title, article.excerpt) + `
+    <div class="article-header">
+        <span class="article-category">${article.category}</span>
+        <h1 class="page-title">${article.title}</h1>
+        <div class="article-meta" style="justify-content: center;">
+            <span>${article.date}</span>
+            <span>•</span>
+            <span>${article.readTime}</span>
+        </div>
+    </div>
+
+    <img src="${article.imageUrl}" alt="${article.title}" class="article-detail-image" style="max-width: 56rem; margin: 0 auto; display: block; padding: 0 1rem;">
+
+    <div class="article-body">
+        <p class="page-text">${content.introduction}</p>
+        
+        ${pointsHtml}
+        
+        <div class="why-it-works">
+            <h3>Why It Works</h3>
+            <p>${content.whyItWorks}</p>
+        </div>
+        
+        <p class="page-text">${content.conclusion}</p>
+        
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+            <a href="index.html" style="color: #2563eb; font-weight: 500;">&larr; Back to all articles</a>
+        </div>
+    </div>
+` + footer;
+
+            return html;
+        }
+
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function generateAllArticles() {
+            const statusDiv = document.getElementById('status');
+            const fileListDiv = document.getElementById('fileList');
+            
+            statusDiv.innerHTML = '<p>⏳ Generating article pages...</p>';
+            fileListDiv.style.display = 'none';
+            
+            let fileList = '';
+            let generatedCount = 0;
+
+            setTimeout(() => {
+                articles.forEach(article => {
+                    const filename = `article-${article.slug}.html`;
+                    const html = generateArticlePage(article);
+                    downloadFile(filename, html);
+                    fileList += `<div class="file-item">${filename}</div>`;
+                    generatedCount++;
+                });
+
+                statusDiv.innerHTML = `<div class="success"><p><strong>✅ Success!</strong> Generated ${generatedCount} article pages.</p><p>All files have been downloaded to your Downloads folder. Move them to the public folder.</p></div>`;
+                fileListDiv.innerHTML = '<h3>Generated Files:</h3>' + fileList;
+                fileListDiv.style.display = 'block';
+            }, 100);
+        }
+    </script>
+</body>
+</html>
